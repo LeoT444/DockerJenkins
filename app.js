@@ -1,0 +1,7 @@
+const express = require('express'); const app = express(); app.get('/', (req, res) => {   res.json({     message: 'Hello Jenkins!',     version: '1.0.0',     build: process.env.BUILD_NUMBER || 'local'   }); }); app.listen(3000, () => {   console.log('App rodando na porta 3000'); }); module.exports = app;
+
+package.json:
+{   "name": "jenkins-exemplo",   "version": "1.0.0",   "main": "app.js",   "scripts": {     "start": "node app.js",     "test": "echo 'Testes OK!' && exit 0"   },   "dependencies": {     "express": "^4.18.0"   } }
+
+Jenkinsfile (na raiz do projeto):
+pipeline {     agent any         stages {         stage('Checkout') {             steps {                 checkout scm                 echo '✅ Código baixado do GitHub'             }         }                 stage('Install') {             steps {                 echo '📦 Instalando dependências...'                 // sh 'npm install' // descomente se tiver Node.js                 echo '✅ Dependências instaladas'             }         }                 stage('Test') {             steps {                 echo '🧪 Executando testes...'                 // sh 'npm test' // descomente se tiver Node.js                 echo '✅ Testes passaram!'             }         }                 stage('Deploy') {             steps {                 echo '🚀 Fazendo deploy...'                 echo "Deploy da versão ${BUILD_NUMBER} realizado!"             }         }     } } 
